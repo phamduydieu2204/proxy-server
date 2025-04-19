@@ -1,1 +1,28 @@
- 
+{
+    "name": "proxy-server",
+    "version": "1.0.0",
+    "description": "Máy chủ proxy cho hệ thống quản lý giao dịch, chuyển tiếp yêu cầu tới Google Apps Script",
+    "main": "server.js",
+    "scripts": {
+      "start": "node server.js",
+      "test": "jest"
+    },
+    "dependencies": {
+      "express": "^4.17.1",
+      "cors": "^2.8.5",
+      "axios": "^0.21.1",
+      "node-cache": "^5.1.2",
+      "winston": "^3.3.3",
+      "dotenv": "^10.0.0"
+    },
+    "devDependencies": {
+      "jest": "^27.0.0",
+      "@testing-library/dom": "^8.0.0",
+      "@testing-library/jest-dom": "^5.11.4"
+    },
+    "author": "Pham Duy Dieu",
+    "license": "ISC",
+    "engines": {
+      "node": "14.x"
+    }
+  }
