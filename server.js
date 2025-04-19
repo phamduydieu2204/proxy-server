@@ -38,35 +38,18 @@ app.use(express.json({ limit: '1mb' }));
 app.post('/api/proxy', async (req, res) => {
   try {
     logger.info('Yêu cầu nhận được', { body: req.body });
-    cache.flushAll(); // Xóa cache để đảm bảo lấy dữ liệu mới
-    // Kiểm tra cache
-    //const cacheKey = JSON.stringify(req.body);
-    //const cached = cache.get(cacheKey);
-    //if (cached) {
-     // logger.info('Trả về từ cache', { cacheKey });
-     // return res.json(cached);
-    //}
-
-    // Gửi request tới Google Apps Script
+    cache.flushAll(); // Xóa cache để đảm bảo dữ liệu mới
+    const cacheKey = JSON.stringify(req.body); // Định nghĩa cacheKey
     const response = await axios.post(
       process.env.GOOGLE_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbxioKJcJps99iNtlAnwf4Uu5IYLOOlCpUh0H9lNBk83uRWE_-ln3r945oGzvG9cP5-V/exec',
       req.body,
       {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        params: {
-          authToken: process.env.SCRIPT_AUTH_TOKEN || 'your-secret-token'
-        }
+        headers: { 'Content-Type': 'application/json' },
+        params: { authToken: process.env.SCRIPT_AUTH_TOKEN }
       }
     );
-
     logger.info('Phản hồi từ Google Apps Script', { data: response.data });
-
-    // Lưu vào cache
-    cache.set(cacheKey, response.data);
-
-    // Trả về phản hồi
+    cache.set(cacheKey, response.data); // Lưu cache với cacheKey
     res.json(response.data);
   } catch (error) {
     logger.error('Lỗi khi gọi Google Apps Script', { message: error.message, stack: error.stack });
