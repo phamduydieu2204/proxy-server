@@ -38,14 +38,14 @@ app.use(express.json({ limit: '1mb' }));
 app.post('/api/proxy', async (req, res) => {
   try {
     logger.info('Yêu cầu nhận được', { body: req.body });
-
+    cache.flushAll(); // Xóa cache để đảm bảo lấy dữ liệu mới
     // Kiểm tra cache
-    const cacheKey = JSON.stringify(req.body);
-    const cached = cache.get(cacheKey);
-    if (cached) {
-      logger.info('Trả về từ cache', { cacheKey });
-      return res.json(cached);
-    }
+    //const cacheKey = JSON.stringify(req.body);
+    //const cached = cache.get(cacheKey);
+    //if (cached) {
+     // logger.info('Trả về từ cache', { cacheKey });
+     // return res.json(cached);
+    //}
 
     // Gửi request tới Google Apps Script
     const response = await axios.post(
