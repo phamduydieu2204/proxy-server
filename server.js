@@ -5,7 +5,7 @@ const axios = require('axios');
 
 const app = express();
 const GOOGLE_SCRIPT_URL = process.env.GOOGLE_SCRIPT_URL;
-const SCRIPT_AUTH_TOKEN = process.env.SCRIPT_AUTH_TOKEN;
+const SECRET_TOKEN = process.env.SECRET_TOKEN;
 
 // ⚠️ CORS phải khai báo TRƯỚC các route
 const corsOptions = {
@@ -23,7 +23,7 @@ app.post('/api/proxy', async (req, res) => {
   try {
     const dataWithToken = {
       ...req.body,
-      authToken: SCRIPT_AUTH_TOKEN
+      authToken: SECRET_TOKEN
     };
 
     const response = await axios.post(GOOGLE_SCRIPT_URL, dataWithToken, {
