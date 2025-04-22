@@ -11,7 +11,12 @@ const app = express();
 
 // CORS chỉ cho phép từ frontend GitHub của bạn
 app.use(cors({
-  origin: ['http://localhost:8080', 'https://phamduydieu2204.github.io']
+  origin: [
+    'http://localhost:8080',
+    'https://phamduydieu2204.github.io'
+  ],
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type']
 }));
 
 app.use(express.json({ limit: '1mb' }));
