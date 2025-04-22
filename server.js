@@ -23,19 +23,26 @@ app.post('/api/proxy', async (req, res) => {
   try {
     const dataWithToken = {
       ...req.body,
-      authToken: SECRET_TOKEN
+      authToken: process.env.SECRET_TOKEN
     };
+
+    console.log("🟢 [Proxy] Nhận từ client:", req.body);
+    console.log("🟡 [Proxy] Thêm token, gửi tới GAS:", dataWithToken);
+
 
     const response = await axios.post(
       `${GOOGLE_SCRIPT_URL}?authToken=${encodeURIComponent(SCRIPT_AUTH_TOKEN)}`,
       req.body,
       { headers: { 'Content-Type': 'application/json' } }
     );    
-
+    console.log("✅ [Proxy] Nhận phản hồi từ GAS:", response.data);
     res.json(response.data);
   } catch (error) {
-    console.error('Lỗi khi gọi GAS:', error.message);
-    res.status(500).json({ error: 'Lỗi khi gọi Google Apps Script', details: error.message });
+    console.error("❌ [Proxy] Lỗi khi gọi GAS:", error.message);
+    if (error.response) {
+      console.error("❌ [Proxy] GAS trả về lỗi:", error.response.data);
+    }
+    res.status(500).json({ error: "Lỗi khi gọi GAS", details: error.response?.data || error.message });
   }
 });
 
