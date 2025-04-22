@@ -8,11 +8,16 @@ const app = express();
 const GOOGLE_SCRIPT_URL = process.env.GOOGLE_SCRIPT_URL;
 const SCRIPT_AUTH_TOKEN = process.env.SCRIPT_AUTH_TOKEN;
 
-app.use(cors({
+const corsOptions = {
   origin: 'https://phamduydieu2204.github.io',
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type'],
-}));
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Xử lý preflight
+
 app.use(express.json());
 
 app.post('/api/proxy', async (req, res) => {
