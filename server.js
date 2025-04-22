@@ -9,25 +9,20 @@ dotenv.config();
 
 const app = express();
 
-// CORS chỉ cho phép từ frontend GitHub của bạn
 app.use(cors({
   origin: (origin, callback) => {
-    const allowedOrigins = ['http://localhost:8080', 'https://phamduydieu2204.github.io'];
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('CORS not allowed'));
-    }
-  }
+    const allowed = ['http://localhost:8080', 'https://phamduydieu2204.github.io'];
+    if (!origin || allowed.includes(origin)) return callback(null, true);
+    return callback(new Error('CORS not allowed'));
+  },
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type']
 }));
-
 
 app.use(express.json({ limit: '1mb' }));
 
-// Tự động nạp tất cả các file controller
 const controllers = {};
 const controllersPath = path.join(__dirname, 'controllers');
-
 fs.readdirSync(controllersPath).forEach(file => {
   if (file.endsWith('.js')) {
     const action = file.replace('.js', '');
@@ -37,12 +32,8 @@ fs.readdirSync(controllersPath).forEach(file => {
 
 app.post('/api/proxy', async (req, res) => {
   const action = req.body.action;
-
   if (!action || !controllers[action]) {
-    return res.status(400).json({
-      status: 'error',
-      message: `Action không hợp lệ: ${action}`
-    });
+    return res.status(400).json({ status: 'error', message: 'Action không hợp lệ: ' + action });
   }
 
   const config = {
@@ -56,17 +47,13 @@ app.post('/api/proxy', async (req, res) => {
   try {
     const result = await controllers[action](req.body, config);
     res.json(result);
-  } catch (error) {
-    console.error(`Lỗi xử lý action "${action}":`, error.message);
-    res.status(500).json({
-      status: 'error',
-      message: 'Lỗi hệ thống proxy.',
-      details: error.message
-    });
+  } catch (err) {
+    console.error(`Lỗi xử lý "${action}":`, err.message);
+    res.status(500).json({ status: 'error', message: 'Lỗi hệ thống proxy.', details: err.message });
   }
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`✅ Proxy server đang chạy tại cổng ${PORT}`);
+  console.log(`✅ Proxy server chạy tại cổng ${PORT}`);
 });
