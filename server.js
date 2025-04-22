@@ -2,51 +2,55 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
+const NodeCache = require('node-cache');
+const winston = require('winston');
 
 const app = express();
-const GOOGLE_SCRIPT_URL = process.env.GOOGLE_SCRIPT_URL;
-const SECRET_TOKEN = process.env.SECRET_TOKEN;
+const cache = new NodeCache({ stdTTL: 600 });
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.File({ filename: 'app.log' }),
+    new winston.transports.Console()
+  ]
+});
 
-// ⚠️ CORS phải khai báo TRƯỚC các route
-const corsOptions = {
+app.use(cors({
   origin: 'https://phamduydieu2204.github.io',
   methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type'],
-  optionsSuccessStatus: 200
-};
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // CORS cho preflight
+  allowedHeaders: ['Content-Type']
+}));
+app.use(express.json({ limit: '1mb' }));
 
-app.use(express.json());
+app.options('/api/proxy', cors());
 
 app.post('/api/proxy', async (req, res) => {
   try {
-    const dataWithToken = {
-      ...req.body,
-      authToken: process.env.SECRET_TOKEN
-    };
-
-    console.log("🟢 [Proxy] Nhận từ client:", req.body);
-    console.log("🟡 [Proxy] Thêm token, gửi tới GAS:", dataWithToken);
-
-
+    logger.info('Yêu cầu nhận được', { body: req.body });
+    const cacheKey = JSON.stringify(req.body);
+    cache.flushAll(); // Xóa cache để đảm bảo dữ liệu mới
     const response = await axios.post(
-      `${GOOGLE_SCRIPT_URL}?authToken=${encodeURIComponent(SCRIPT_AUTH_TOKEN)}`,
+      process.env.GOOGLE_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbxfd_VotWrYLCgsI3BgItma_NQAwKTYGfZJdX-dJe5XphGDjzvgNsoJ3GIgYHsDor1V/exec',
       req.body,
-      { headers: { 'Content-Type': 'application/json' } }
-    );    
-    console.log("✅ [Proxy] Nhận phản hồi từ GAS:", response.data);
+      {
+        headers: { 'Content-Type': 'application/json' },
+        params: { authToken: process.env.SECRET_TOKEN }
+      }
+    );
+    logger.info('Phản hồi từ Google Apps Script', { data: response.data });
+    cache.set(cacheKey, response.data);
     res.json(response.data);
   } catch (error) {
-    console.error("❌ [Proxy] Lỗi khi gọi GAS:", error.message);
-    if (error.response) {
-      console.error("❌ [Proxy] GAS trả về lỗi:", error.response.data);
-    }
-    res.status(500).json({ error: "Lỗi khi gọi GAS", details: error.response?.data || error.message });
+    logger.error('Lỗi khi gọi Google Apps Script', { message: error.message, stack: error.stack });
+    res.status(500).json({ error: 'Lỗi khi gọi Google Apps Script', details: error.message });
   }
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Proxy server đang chạy ở cổng ${PORT}`);
+  logger.info(`Proxy server đang chạy trên cổng ${PORT}`);
 });
