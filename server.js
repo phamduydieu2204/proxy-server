@@ -34,11 +34,11 @@ app.post('/api/proxy', async (req, res) => {
     const cacheKey = JSON.stringify(req.body);
     cache.flushAll(); // Xóa cache để đảm bảo dữ liệu mới
     const response = await axios.post(
-      process.env.GOOGLE_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbxfd_VotWrYLCgsI3BgItma_NQAwKTYGfZJdX-dJe5XphGDjzvgNsoJ3GIgYHsDor1V/exec',
+      process.env.GOOGLE_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwq91ZZisriLb6Vj3phJe9h6l6uFKtv4kNFjx7rTeTYgZik4Y20n12O4OW-Ro5ZoE3J/exec',
       req.body,
       {
         headers: { 'Content-Type': 'application/json' },
-        params: { authToken: process.env.SECRET_TOKEN }
+        params: { authToken: process.env.SCRIPT_AUTH_TOKEN }
       }
     );
     logger.info('Phản hồi từ Google Apps Script', { data: response.data });
