@@ -26,10 +26,11 @@ app.post('/api/proxy', async (req, res) => {
       authToken: SECRET_TOKEN
     };
 
-    console.log("🟡 Token đang gửi lên GAS:", dataWithToken.authToken);
-    const response = await axios.post(GOOGLE_SCRIPT_URL, dataWithToken, {
-      headers: { 'Content-Type': 'application/json' }
-    });
+    const response = await axios.post(
+      `${GOOGLE_SCRIPT_URL}?authToken=${encodeURIComponent(SCRIPT_AUTH_TOKEN)}`,
+      req.body,
+      { headers: { 'Content-Type': 'application/json' } }
+    );    
 
     res.json(response.data);
   } catch (error) {
