@@ -1,8 +1,12 @@
+require('dotenv').config(); // Đọc .env
+
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
 
 const app = express();
+const GOOGLE_SCRIPT_URL = process.env.GOOGLE_SCRIPT_URL;
+const SCRIPT_AUTH_TOKEN = process.env.SCRIPT_AUTH_TOKEN;
 
 app.use(cors({
   origin: 'https://phamduydieu2204.github.io',
@@ -14,15 +18,22 @@ app.use(express.json());
 app.post('/api/proxy', async (req, res) => {
   try {
     console.log('Yêu cầu nhận được:', req.body);
+
+    const dataWithToken = {
+      ...req.body,
+      authToken: SCRIPT_AUTH_TOKEN
+    };
+
     const response = await axios.post(
-      'https://script.google.com/macros/s/AKfycbxioKJcJps99iNtlAnwf4Uu5IYLOOlCpUh0H9lNBk83uRWE_-ln3r945oGzvG9cP5-V/exec',
-      req.body,
+      GOOGLE_SCRIPT_URL,
+      dataWithToken,
       {
         headers: {
           'Content-Type': 'application/json',
         },
       }
     );
+
     console.log('Phản hồi từ Google Apps Script:', response.data);
     res.json(response.data);
   } catch (error) {
