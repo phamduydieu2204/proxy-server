@@ -1,8 +1,8 @@
-require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
 const winston = require('winston');
+require('dotenv').config();
 
 const app = express();
 const logger = winston.createLogger({
