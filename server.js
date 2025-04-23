@@ -2,11 +2,9 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
-const NodeCache = require('node-cache');
 const winston = require('winston');
 
 const app = express();
-const cache = new NodeCache({ stdTTL: 600 });
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.combine(
@@ -24,17 +22,15 @@ app.use(cors({
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type']
 }));
-app.use(express.json({ limit: '1mb' }));
+app.use(express.json());
 
 app.options('/api/proxy', cors());
 
 app.post('/api/proxy', async (req, res) => {
   try {
     logger.info('Yêu cầu nhận được', { body: req.body });
-    const cacheKey = JSON.stringify(req.body);
-    cache.flushAll(); // Xóa cache để đảm bảo dữ liệu mới
     const response = await axios.post(
-      process.env.GOOGLE_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwq91ZZisriLb6Vj3phJe9h6l6uFKtv4kNFjx7rTeTYgZik4Y20n12O4OW-Ro5ZoE3J/exec',
+      process.env.GOOGLE_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbxsIg9ZSE1bMuaRQGABZgpVDs3ZaLxa07A39fbusIk9uQTsjDDbsDPwBstnZsT7mXM/exec',
       req.body,
       {
         headers: { 'Content-Type': 'application/json' },
@@ -42,7 +38,6 @@ app.post('/api/proxy', async (req, res) => {
       }
     );
     logger.info('Phản hồi từ Google Apps Script', { data: response.data });
-    cache.set(cacheKey, response.data);
     res.json(response.data);
   } catch (error) {
     logger.error('Lỗi khi gọi Google Apps Script', { message: error.message, stack: error.stack });
