@@ -5,7 +5,7 @@ const axios = require('axios');
 const app = express();
 
 app.use(cors({
-  origin: 'https://phamduydieu2204.github.io',
+  origin: ['https://phamduydieu2204.github.io', 'https://vidieu.vn'],
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type'],
 }));
