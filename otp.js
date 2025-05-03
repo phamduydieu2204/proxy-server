@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const softwareSelect = document.getElementById("softwareName");
   const response = await fetch(BACKEND_URL, {
     method: "POST",
-    body: JSON.stringify({ action: "getSoftwareList" }),
+    body: JSON.stringify({ action: "getSoftwareListUnique" }),
     headers: { "Content-Type": "application/json" }
   });
 
