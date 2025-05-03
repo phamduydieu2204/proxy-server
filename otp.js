@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   const result = await response.json();
-  console.log("📥 Kết quả getSoftwareList:", result);
+  console.log("📥 Kết quả getSoftwareListUnique:", result);
   if (result.status === "success" && Array.isArray(result.list)) {
     result.list.forEach(name => {
       const option = document.createElement("option");
