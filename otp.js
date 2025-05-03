@@ -6,11 +6,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   const softwareSelect = document.getElementById("softwareName");
   const response = await fetch(BACKEND_URL, {
     method: "POST",
-    body: JSON.stringify({ action: "getSoftwareListUnique" }),
+    body: JSON.stringify({ action: "getSoftwareList" }),
     headers: { "Content-Type": "application/json" }
   });
 
   const result = await response.json();
+  console.log("📥 Kết quả getSoftwareList:", result);
   if (result.status === "success" && Array.isArray(result.list)) {
     result.list.forEach(name => {
       const option = document.createElement("option");
@@ -44,6 +45,7 @@ document.getElementById("btnGetOtp").addEventListener("click", async () => {
   });
 
   const result = await response.json();
+  console.log("📥 Kết quả getOtpByRequest:", result);
   const output = document.getElementById("otpResult");
   if (result.status === "success") {
     output.innerHTML = `<strong>Mã OTP:</strong> <code>${result.otp}</code>`;
