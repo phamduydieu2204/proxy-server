@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Lấy OTP</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="otp-container">
+    <h2>Lấy mã OTP</h2>
+
+    <label for="emailDangKy">Email đăng ký:</label>
+    <input type="email" id="emailDangKy" required />
+
+    <label for="softwareName">Phần mềm:</label>
+    <select id="softwareName">
+      <option value="">-- Chọn phần mềm --</option>
+    </select>
+
+    <label for="emailDuocCap">Email được cung cấp:</label>
+    <input type="email" id="emailDuocCap" required />
+
+    <button id="btnGetOtp">Lấy OTP</button>
+
+    <div id="otpResult" style="margin-top: 20px;"></div>
+  </div>
+
+  <script type="module" src="otp.js"></script>
+</body>
+</html>
