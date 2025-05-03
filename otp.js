@@ -56,11 +56,11 @@ document.getElementById("btnGetOtp").addEventListener("click", async () => {
   console.log("📥 Kết quả getOtpByRequest:", result);
   const output = document.getElementById("otpResult");
   if (result.status === "success") {
-    let html = `<strong>Mã OTP:</strong> <code>${result.otp}</code>`;
+    output.innerHTML = `<strong>Mã OTP:</strong> <code id="otpCode">${result.otp}</code>
+      <i class="fas fa-copy" title="Sao chép" style="cursor: pointer; margin-left: 10px; color: #1a73e8;" onclick="navigator.clipboard.writeText('${result.otp}').then(() => alert('Đã sao chép OTP'));" ></i>`;
     if (result.message) {
-      html += `<div style="margin-top: 8px; font-size: 0.9em; color: #555;">${result.message}</div>`;
+      output.innerHTML += `<div style="margin-top: 8px; font-size: 0.9em; color: #555;">${result.message}</div>`;
     }
-    output.innerHTML = html;
   } else {
     output.textContent = "❌ " + (result.message || "Không thể lấy OTP.");
   }
