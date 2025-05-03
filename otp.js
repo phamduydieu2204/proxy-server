@@ -23,16 +23,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  softwareSelect.addEventListener("change", () => {
-    const selected = softwareSelect.value;
-    if (selected && note) {
-      note.innerHTML = `Nếu <strong>${selected}</strong> yêu cầu nhập mã từ ứng dụng xác minh, chọn \"Ứng dụng xác minh\".<br />`
-        + `Nếu <strong>${selected}</strong> yêu cầu nhập mã được gửi tới email đăng nhập, chọn \"Email\".`;
-    } else {
-      note.innerHTML = `Nếu phần mềm yêu cầu nhập mã từ ứng dụng xác minh, chọn \"Ứng dụng xác minh\".<br />`
-        + `Nếu phần mềm yêu cầu nhập mã được gửi tới email đăng nhập, chọn \"Email\".`;
-    }
-  });
+  // Ghi chú cố định luôn hiện dưới nhãn tiêu đề
+  if (note) {
+    note.innerHTML = `Nếu phần mềm yêu cầu nhập mã từ ứng dụng xác minh, chọn \"Ứng dụng xác minh\".<br />`
+      + `Nếu phần mềm yêu cầu nhập mã được gửi tới email đăng nhập, chọn \"Email\".`;
+  }
 });
 
 document.getElementById("btnGetOtp").addEventListener("click", async () => {
