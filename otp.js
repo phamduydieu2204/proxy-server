@@ -56,7 +56,11 @@ document.getElementById("btnGetOtp").addEventListener("click", async () => {
   console.log("📥 Kết quả getOtpByRequest:", result);
   const output = document.getElementById("otpResult");
   if (result.status === "success") {
-    output.innerHTML = `<strong>Mã OTP:</strong> <code>${result.otp}</code>`;
+    let html = `<strong>Mã OTP:</strong> <code>${result.otp}</code>`;
+    if (result.message) {
+      html += `<div style="margin-top: 8px; font-size: 0.9em; color: #555;">${result.message}</div>`;
+    }
+    output.innerHTML = html;
   } else {
     output.textContent = "❌ " + (result.message || "Không thể lấy OTP.");
   }
