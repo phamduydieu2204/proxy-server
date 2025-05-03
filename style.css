@@ -1,0 +1,69 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 30px;
+    background-color: #f9f9f9;
+  }
+  
+  .otp-container {
+    max-width: 500px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .otp-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .otp-container label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+  }
+  
+  .otp-container input,
+  .otp-container select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+  
+  .otp-container button {
+    margin-top: 20px;
+    padding: 12px 20px;
+    width: 100%;
+    background-color: #1a73e8;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .otp-container button:hover {
+    background-color: #0f5ec5;
+  }
+  
+  .note {
+    display: block;
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #555;
+  }
+  
+  #otpResult {
+    font-size: 1.2em;
+    text-align: center;
+    margin-top: 25px;
+    background: #f0f8ff;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px dashed #1a73e8;
+  }
+  
