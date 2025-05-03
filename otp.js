@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const { BACKEND_URL } = getConstants();
 
   const softwareSelect = document.getElementById("softwareName");
+  const note = document.getElementById("otpNote");
+
   const response = await fetch(BACKEND_URL, {
     method: "POST",
     body: JSON.stringify({ action: "getSoftwareListUnique" }),
@@ -20,14 +22,25 @@ document.addEventListener("DOMContentLoaded", async () => {
       softwareSelect.appendChild(option);
     });
   }
+
+  softwareSelect.addEventListener("change", () => {
+    const selected = softwareSelect.value;
+    if (selected && note) {
+      note.innerHTML = `Nếu <strong>${selected}</strong> yêu cầu nhập mã từ ứng dụng xác minh, chọn \"Ứng dụng xác minh\".<br />`
+        + `Nếu <strong>${selected}</strong> yêu cầu nhập mã được gửi tới email đăng nhập, chọn \"Email\".`;
+    } else {
+      note.innerHTML = `Nếu phần mềm yêu cầu nhập mã từ ứng dụng xác minh, chọn \"Ứng dụng xác minh\".<br />`
+        + `Nếu phần mềm yêu cầu nhập mã được gửi tới email đăng nhập, chọn \"Email\".`;
+    }
+  });
 });
 
 document.getElementById("btnGetOtp").addEventListener("click", async () => {
   const emailDangKy = document.getElementById("emailDangKy").value.trim();
   const software = document.getElementById("softwareName").value;
-  const emailDuocCap = document.getElementById("emailDuocCap").value.trim();
+  const otpSource = document.getElementById("otpSource").value;
 
-  if (!emailDangKy || !software || !emailDuocCap) {
+  if (!emailDangKy || !software || !otpSource) {
     alert("Vui lòng điền đầy đủ thông tin!");
     return;
   }
@@ -39,7 +52,7 @@ document.getElementById("btnGetOtp").addEventListener("click", async () => {
       action: "getOtpByRequest",
       email: emailDangKy,
       software: software,
-      emailCungCap: emailDuocCap
+      otpSource: otpSource
     }),
     headers: { "Content-Type": "application/json" }
   });

@@ -9,22 +9,42 @@
   <div class="otp-container">
     <h2>Lấy mã OTP</h2>
 
-    <label for="emailDangKy">Email đăng ký:</label>
+    <label for="emailDangKy">Email bạn dùng để đăng ký mua phần mềm:</label>
     <input type="email" id="emailDangKy" required />
 
-    <label for="softwareName">Phần mềm:</label>
-    <select id="softwareName">
+    <label for="softwareName">Tên phần mềm:</label>
+    <select id="softwareName" required>
       <option value="">-- Chọn phần mềm --</option>
     </select>
 
-    <label for="emailDuocCap">Email được cung cấp:</label>
-    <input type="email" id="emailDuocCap" required />
+    <label for="otpSource">Phần mềm yêu cầu bạn lấy mã OTP từ đâu?</label>
+    <select id="otpSource" required>
+      <option value="">-- Vui lòng chọn --</option>
+      <option value="authy">📱 Mã OTP từ ứng dụng xác minhAut</option>
+      <option value="email">📧 Mã OTP gửi đến email đăng nhập</option>
+    </select>
+    <small class="note" id="otpNote">
+      Nếu phần mềm gửi mã qua ứng dụng Authy bạn đã cài, chọn "Authy".<br />
+      Nếu phần mềm gửi mã qua email đăng nhập, chọn "Email".
+    </small>
 
     <button id="btnGetOtp">Lấy OTP</button>
-
     <div id="otpResult" style="margin-top: 20px;"></div>
   </div>
 
   <script type="module" src="otp.js"></script>
+  <script>
+    document.getElementById("softwareName").addEventListener("change", function () {
+      const selected = this.value;
+      const note = document.getElementById("otpNote");
+      if (selected) {
+        note.innerHTML = `Nếu <strong>${selected}</strong> yêu cầu nhập mã từ ứng dụng xác minh, chọn "Ứng dụng xác minh".<br />`
+        + `Nếu <strong>${selected}</strong> gửi mã qua email đăng nhập, chọn "Email".`;
+      } else {
+        note.innerHTML = `Nếu phần mềm yêu cầu nhập mã từ ứng dụng xác minh, chọn "Ứng dụng xác minh".<br />`
+        + `Nếu phần mềm gửi mã qua email đăng nhập, chọn "Email".`;
+      }
+    });
+  </script>
 </body>
 </html>
