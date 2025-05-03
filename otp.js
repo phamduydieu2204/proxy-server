@@ -36,23 +36,22 @@ document.getElementById("btnGetOtp").addEventListener("click", () => {
   const now = Date.now();
   const msUntilNextOtp = 30000 - (now % 30000);
 
-  if (msUntilNextOtp < 10000) {
-    const delay = msUntilNextOtp + 30000;
-    let seconds = Math.ceil(delay / 1000);
+  // Luôn chờ đến chu kỳ mới (tối đa 30s + buffer)
+  const delay = msUntilNextOtp + 30000;
+  let seconds = Math.ceil(delay / 1000);
+  showMessage(`⏳ Vui lòng đợi ${seconds}s để lấy mã OTP mới...`);
+
+  clearInterval(otpCountdown);
+  otpCountdown = setInterval(() => {
+    seconds--;
     showMessage(`⏳ Vui lòng đợi ${seconds}s để lấy mã OTP mới...`);
-    clearInterval(otpCountdown);
-    otpCountdown = setInterval(() => {
-      seconds--;
-      showMessage(`⏳ Vui lòng đợi ${seconds}s để lấy mã OTP mới...`);
-      if (seconds <= 0) {
-        clearInterval(otpCountdown);
-        requestOtp();
-      }
-    }, 1000);
-  } else {
-    requestOtp();
-  }
+    if (seconds <= 0) {
+      clearInterval(otpCountdown);
+      requestOtp();
+    }
+  }, 1000);
 });
+
 
 function showMessage(text) {
   const output = document.getElementById("otpResult");
