@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     Nếu phần mềm gửi mã về email đăng nhập, chọn "<strong>Email</strong>".`;
   }
 
-  startOtpCountdownTimer(); // hiển thị đồng hồ đếm ngược OTP
+  //startOtpCountdownTimer(); // hiển thị đồng hồ đếm ngược OTP
 });
 
 document.getElementById("btnGetOtp").addEventListener("click", () => {
