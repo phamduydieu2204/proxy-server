@@ -1,14 +1,13 @@
 import { getConstants } from './constants.js';
 
-let countdownInterval = null;
-let progressInterval = null;
+let otpCountdown = null;
+let otpValidityCountdown = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
   const { BACKEND_URL } = getConstants();
   const softwareSelect = document.getElementById("softwareName");
   const note = document.getElementById("otpNote");
 
-  // Tải danh sách phần mềm
   const response = await fetch(BACKEND_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -25,14 +24,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // Ghi chú hướng dẫn
   if (note) {
     note.innerHTML = `💡 <strong>Hướng dẫn:</strong> Nếu phần mềm yêu cầu nhập mã từ ứng dụng xác minh, chọn "<strong>Ứng dụng Authy</strong>".<br />
     Nếu phần mềm gửi mã về email đăng nhập, chọn "<strong>Email</strong>".`;
   }
 
-  // Luôn hiển thị đồng hồ đếm ngược
-  startOtpCountdownDisplay();
+  startOtpCountdownTimer(); // hiển thị đồng hồ đếm ngược OTP
 });
 
 document.getElementById("btnGetOtp").addEventListener("click", () => {
@@ -40,14 +37,15 @@ document.getElementById("btnGetOtp").addEventListener("click", () => {
   const msUntilNextOtp = 30000 - (now % 30000);
 
   if (msUntilNextOtp < 10000) {
-    const waitMs = msUntilNextOtp + 30000;
-    let seconds = Math.ceil(waitMs / 1000);
-    updateOtpResult(`⏳ Vui lòng đợi ${seconds}s để lấy mã OTP mới...`);
-    let countdown = setInterval(() => {
+    const delay = msUntilNextOtp + 30000;
+    let seconds = Math.ceil(delay / 1000);
+    showMessage(`⏳ Vui lòng đợi ${seconds}s để lấy mã OTP mới...`);
+    clearInterval(otpCountdown);
+    otpCountdown = setInterval(() => {
       seconds--;
-      updateOtpResult(`⏳ Vui lòng đợi ${seconds}s để lấy mã OTP mới...`);
+      showMessage(`⏳ Vui lòng đợi ${seconds}s để lấy mã OTP mới...`);
       if (seconds <= 0) {
-        clearInterval(countdown);
+        clearInterval(otpCountdown);
         requestOtp();
       }
     }, 1000);
@@ -56,9 +54,9 @@ document.getElementById("btnGetOtp").addEventListener("click", () => {
   }
 });
 
-function updateOtpResult(message) {
+function showMessage(text) {
   const output = document.getElementById("otpResult");
-  output.innerHTML = `<div style="color:#555; font-size:0.95em;">${message}</div>`;
+  output.innerHTML = `<div style="color:#555; font-size:0.95em;">${text}</div>`;
 }
 
 async function requestOtp() {
@@ -88,59 +86,77 @@ async function requestOtp() {
   const result = await response.json();
 
   if (result.status === "success") {
-    output.innerHTML = `
-      <strong>Mã OTP:</strong>
-      <code id="otpCode" style="cursor:pointer; color:#1a73e8; font-weight:bold;">${result.otp}</code>
-      <div style="font-size:0.85em; color:#888; margin-top:4px;">(Click vào mã OTP để sao chép)</div>
-      <div id="otpProgressContainer" style="margin-top:10px;">
-        <svg height="36" width="36">
-          <circle cx="18" cy="18" r="16" stroke="#ccc" stroke-width="3" fill="none"></circle>
-          <circle id="otpProgressCircle" cx="18" cy="18" r="16" stroke="#1a73e8" stroke-width="3" fill="none"
-            stroke-dasharray="100" stroke-dashoffset="0" transform="rotate(-90 18 18)" />
-        </svg>
-      </div>
-    `;
+    // Tạo khung hiển thị OTP
+    const container = document.createElement("div");
+    container.style.border = "1px dashed #1a73e8";
+    container.style.padding = "14px";
+    container.style.borderRadius = "8px";
+    container.style.backgroundColor = "#f1f8ff";
+    container.style.textAlign = "center";
+    container.style.cursor = "pointer";
+    container.id = "otpBox";
 
-    document.getElementById("otpCode").addEventListener("click", () => {
+    const otpCode = document.createElement("div");
+    otpCode.textContent = result.otp;
+    otpCode.style.fontSize = "1.6em";
+    otpCode.style.fontWeight = "bold";
+    otpCode.style.color = "#1a73e8";
+    otpCode.style.marginBottom = "8px";
+
+    const copyHint = document.createElement("div");
+    copyHint.textContent = "(Click vào mã OTP để sao chép)";
+    copyHint.style.fontSize = "0.85em";
+    copyHint.style.color = "#777";
+
+    const expireNote = document.createElement("div");
+    expireNote.id = "otpExpireNote";
+    expireNote.style.fontSize = "0.85em";
+    expireNote.style.color = "#555";
+    expireNote.style.marginTop = "10px";
+
+    const deviceNote = document.createElement("div");
+    deviceNote.textContent = result.message || "";
+    deviceNote.style.marginTop = "6px";
+
+    container.appendChild(otpCode);
+    container.appendChild(copyHint);
+    container.appendChild(expireNote);
+    container.appendChild(deviceNote);
+
+    container.addEventListener("click", () => {
       navigator.clipboard.writeText(result.otp);
       alert("✅ Mã OTP đã được sao chép!");
     });
 
-    if (result.message) {
-      output.innerHTML += `<div style="margin-top:10px; font-size:0.9em; color:#444;">${result.message}</div>`;
-    }
+    output.innerHTML = "";
+    output.appendChild(container);
 
-    animateOtpCircle();
+    // Đếm ngược 30s hiệu lực OTP
+    let remain = 30;
+    expireNote.textContent = `⏱️ Mã OTP còn hiệu lực trong ${remain}s`;
+    clearInterval(otpValidityCountdown);
+    otpValidityCountdown = setInterval(() => {
+      remain--;
+      if (remain > 0) {
+        expireNote.textContent = `⏱️ Mã OTP còn hiệu lực trong ${remain}s`;
+      } else {
+        clearInterval(otpValidityCountdown);
+        output.innerHTML = ""; // Ẩn toàn bộ khung
+      }
+    }, 1000);
   } else {
     output.textContent = "❌ " + (result.message || "Không thể lấy OTP.");
   }
 }
 
-function animateOtpCircle() {
-  const circle = document.getElementById("otpProgressCircle");
-  let progress = 0;
-  if (circle) {
-    clearInterval(progressInterval);
-    progress = 0;
-    const step = 100 / 30;
-    progressInterval = setInterval(() => {
-      progress += step;
-      circle.setAttribute("stroke-dashoffset", 100 - progress);
-      if (progress >= 100) {
-        clearInterval(progressInterval);
-      }
-    }, 1000);
-  }
-}
-
-function startOtpCountdownDisplay() {
+function startOtpCountdownTimer() {
   const otpNote = document.getElementById("otpNoteTimer");
   if (!otpNote) return;
 
   setInterval(() => {
     const now = Date.now();
-    const msUntilNextOtp = 30000 - (now % 30000);
-    const seconds = Math.floor(msUntilNextOtp / 1000);
+    const msUntilNext = 30000 - (now % 30000);
+    const seconds = Math.floor(msUntilNext / 1000);
     otpNote.innerHTML = `🕒 Mã OTP mới sẽ được sinh ra sau <strong>${seconds}s</strong>`;
   }, 1000);
 }
