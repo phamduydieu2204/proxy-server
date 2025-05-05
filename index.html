@@ -24,14 +24,23 @@
       <option value="email">📧 Email đăng nhập</option>
     </select>
 
-    <small class="note" id="otpNote" style="margin-top: 8px;">
+    <!--<small class="note" id="otpNote" style="margin-top: 8px;">
       💡 <strong>Hướng dẫn:</strong> Nếu phần mềm yêu cầu nhập mã từ ứng dụng xác minh, chọn "<strong>Ứng dụng Authy</strong>".<br />
       Nếu phần mềm gửi mã về email đăng nhập, chọn "<strong>Email</strong>".
-    </small>
+    </small> -->
 
     <button id="btnGetOtp">Lấy OTP</button>
 
+    <!-- ✅ Dòng mở hướng dẫn -->
+    <div style="text-align: center; margin-top: 16px;">
+      <a href="https://your-link.com/huong-dan-lay-otp" target="_blank" style="font-size: 0.9em; color: #1a73e8; text-decoration: underline;">
+        📘 Xem hướng dẫn cách lấy mã OTP
+      </a>
+    </div>
+
     <div id="otpResult" style="margin-top: 24px;"></div>
+
+    <div id="otpNoteTimer" class="note" style="margin-top: 16px; font-size: 0.95em; color: #333;"></div>
   </div>
 
   <script type="module" src="otp.js"></script>
