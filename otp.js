@@ -131,7 +131,7 @@ async function fetchFinalOtp(email, software, otpSource) {
     expireNote.style.marginTop = "10px";
 
     const deviceNote = document.createElement("div");
-    deviceNote.textContent = result.message ? `Bạn đã đăng nhập ${result.message.split("/")[0].trim()} thiết bị` : "";
+    deviceNote.textContent = result.message ? `${result.message.split("/")[0].trim()} thiết bị` : "";
     deviceNote.style.marginTop = "6px";
 
     container.appendChild(otpCode);
