@@ -8,36 +8,36 @@ document.addEventListener("DOMContentLoaded", async () => {
   const softwareSelect = document.getElementById("softwareName");
   const note = document.getElementById("otpNote");
 
-  const response = await fetch(BACKEND_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "getSoftwareListUnique" })
-  });
+const softwareList = ["ChatGPT Plus", "ChatGPT Pro", "Grok Ai", "Claude AI", "NetFlix", "Keysearch", "VOC_AI", "Canva"];
+softwareList.forEach(name => {
+  const option = document.createElement("option");
+  option.value = name;
+  option.textContent = name;
+  softwareSelect.appendChild(option);
+});
 
-  const result = await response.json();
-  if (result.status === "success" && Array.isArray(result.list)) {
-    result.list.forEach(name => {
-      const option = document.createElement("option");
-      option.value = name;
-      option.textContent = name;
-      softwareSelect.appendChild(option);
-    });
-  }
 
   if (note) {
-    note.innerHTML = `💡 <strong>Hướng dẫn:</strong> Nếu phần mềm yêu cầu nhập mã từ ứng dụng xác minh, chọn "<strong>Ứng dụng Authy</strong>".<br />
-    Nếu phần mềm gửi mã về email đăng nhập, chọn "<strong>Email</strong>".`;
+    note.style.display = "none";
   }
 });
 
 document.getElementById("btnGetOtp").addEventListener("click", async () => {
   const email = document.getElementById("emailDangKy").value.trim();
   const software = document.getElementById("softwareName").value;
-  const otpSource = document.getElementById("otpSource").value;
+  const otpSource = "authy"; // mặc định luôn dùng Authy
   const output = document.getElementById("otpResult");
+  const btn = document.getElementById("btnGetOtp");
+
+  btn.disabled = true;
+  btn.textContent = "⏳ Đang xử lý...";
+  output.innerHTML = `<div style="color: #555;">🔄 Đang kiểm tra thông tin và lấy OTP...</div>`;
+
 
   if (!email || !software || !otpSource) {
     alert("Vui lòng điền đầy đủ thông tin!");
+    btn.disabled = false;
+    btn.textContent = "Lấy OTP";
     return;
   }
 
@@ -62,20 +62,27 @@ document.getElementById("btnGetOtp").addEventListener("click", async () => {
     return;
   }
 
-  const msUntilNextOtp = 30000 - (Date.now() % 30000);
-  const delay = msUntilNextOtp + 30000;
+const now = Date.now();
+const msUntilNextOtp = 30000 - (now % 30000);
+const secondsLeft = Math.ceil(msUntilNextOtp / 1000);
+
+if (secondsLeft < 20) {
+  const delay = msUntilNextOtp + 1000; // đợi sang chu kỳ kế tiếp
   let seconds = Math.ceil(delay / 1000);
 
-  output.innerHTML = `<div style="color: #555;">⏳ Vui lòng đợi ${seconds}s để lấy mã OTP mới...</div>`;
+  output.innerHTML = `<div style="color: #555;">⏳ Vui lòng đợi ${seconds}s để lấy mã OTP...</div>`;
   clearInterval(otpCountdown);
   otpCountdown = setInterval(() => {
     seconds--;
-    output.innerHTML = `<div style="color: #555;">⏳ Vui lòng đợi ${seconds}s để lấy mã OTP mới...</div>`;
+    output.innerHTML = `<div style="color: #555;">⏳ Vui lòng đợi ${seconds}s để lấy mã OTP...</div>`;
     if (seconds <= 0) {
       clearInterval(otpCountdown);
       fetchFinalOtp(email, software, otpSource);
     }
   }, 1000);
+} else{
+  fetchFinalOtp(email, software, otpSource);
+}
 });
 
 async function fetchFinalOtp(email, software, otpSource) {
@@ -124,7 +131,7 @@ async function fetchFinalOtp(email, software, otpSource) {
     expireNote.style.marginTop = "10px";
 
     const deviceNote = document.createElement("div");
-    deviceNote.textContent = result.message || "";
+    deviceNote.textContent = result.message?.split("/")[0].trim() || "";
     deviceNote.style.marginTop = "6px";
 
     container.appendChild(otpCode);
@@ -155,4 +162,7 @@ async function fetchFinalOtp(email, software, otpSource) {
   } else {
     output.textContent = "❌ " + (result.message || "Không thể lấy OTP.");
   }
+  const btn = document.getElementById("btnGetOtp");
+  btn.disabled = false;
+  btn.textContent = "Lấy OTP";
 }

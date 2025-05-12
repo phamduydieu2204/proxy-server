@@ -9,31 +9,32 @@
   <div class="otp-container">
     <h2>Lấy mã OTP</h2>
 
-    <label for="emailDangKy">📧 Email bạn dùng để đăng ký mua phần mềm:</label>
+    <label for="emailDangKy">📧 Email bạn dùng để đăng ký với VIDIEU.VN:</label>
     <input type="email" id="emailDangKy" required />
 
-    <label for="softwareName">🧩 Tên phần mềm:</label>
+    <label for="softwareName">🧩 Chọn phần mềm cần lấy mã OTP:</label>
     <select id="softwareName" required>
       <option value="">-- Chọn phần mềm --</option>
     </select>
 
-    <label for="otpSource">🔐 Mã OTP được phần mềm yêu cầu từ đâu?</label>
-    <select id="otpSource" required>
-      <option value="">-- Vui lòng chọn --</option>
-      <option value="authy">📱 Ứng dụng Authy</option>
-      <option value="email">📧 Email đăng nhập</option>
-    </select>
+    <!-- ✅ ẨN trường chọn nơi lấy mã -->
+    <div style="display: none;">
+      <label for="otpSource">🔐 Mã OTP được phần mềm yêu cầu từ đâu?</label>
+      <select id="otpSource" required>
+        <option value="authy" selected>📱 Ứng dụng Authy</option>
+        <option value="email">📧 Email đăng nhập</option>
+      </select>
+    </div>
 
-    <!--<small class="note" id="otpNote" style="margin-top: 8px;">
+    <small class="note" id="otpNote" style="margin-top: 8px;">
       💡 <strong>Hướng dẫn:</strong> Nếu phần mềm yêu cầu nhập mã từ ứng dụng xác minh, chọn "<strong>Ứng dụng Authy</strong>".<br />
       Nếu phần mềm gửi mã về email đăng nhập, chọn "<strong>Email</strong>".
-    </small> -->
+    </small>
 
     <button id="btnGetOtp">Lấy OTP</button>
 
-    <!-- ✅ Dòng mở hướng dẫn -->
     <div style="text-align: center; margin-top: 16px;">
-      <a href="https://your-link.com/huong-dan-lay-otp" target="_blank" style="font-size: 0.9em; color: #1a73e8; text-decoration: underline;">
+      <a href="https://youtu.be/98ieUd8SIdE?si=P3YE3EgpVvLSymZw" target="_blank" style="font-size: 0.9em; color: #1a73e8; text-decoration: underline;">
         📘 Xem hướng dẫn cách lấy mã OTP
       </a>
     </div>
