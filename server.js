@@ -15,7 +15,7 @@ app.post('/api/proxy', async (req, res) => {
   try {
     console.log('Yêu cầu nhận được:', req.body);
     const response = await axios.post(
-      'https://script.google.com/macros/s/AKfycbz5pcpMsolcMd6ugTI4ydFV0NOFcjmGQRwcreXw5Ms_qDBOpv5-mDZutVQvpG4wWtKS/exec',
+      'https://script.google.com/macros/s/AKfycbwwzF-f9Lz5wmelZsK8mDQEYotcZqqvZoR0b_v3nEAuGoUzkSo0vL-1yjmDrY4_BGrM/exec',
       req.body,
       {
         headers: {
