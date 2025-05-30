@@ -16,6 +16,9 @@ softwareList.forEach(name => {
   softwareSelect.appendChild(option);
 });
 
+// Đặt ChatGPT Plus là giá trị mặc định
+softwareSelect.value = "ChatGPT Plus";
+
 
   if (note) {
     note.style.display = "none";
