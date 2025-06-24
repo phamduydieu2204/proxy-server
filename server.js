@@ -4,10 +4,27 @@ const axios = require('axios');
 
 const app = express();
 
+// Debug middleware để log origin
+app.use((req, res, next) => {
+  console.log('🌐 Request from origin:', req.headers.origin);
+  console.log('📋 Request method:', req.method);
+  console.log('📍 Request path:', req.path);
+  next();
+});
+
 app.use(cors({
-  origin: ['https://phamduydieu2204.github.io', 'https://vidieu.vn'],
+  origin: [
+    'https://phamduydieu2204.github.io',
+    'https://vidieu.vn',
+    'http://localhost:3000',
+    'http://localhost:8080',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:8080',
+    /https:\/\/phamduydieu2204\.github\.io/
+  ],
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type'],
+  credentials: true
 }));
 app.use(express.json());
 
