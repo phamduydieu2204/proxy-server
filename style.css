@@ -58,13 +58,131 @@ body {
   }
   
   #otpResult {
-    font-size: 1.2em;
-    text-align: center;
     margin-top: 25px;
-    background: #f0f8ff;
-    padding: 10px;
+  }
+  
+  /* Message styles */
+  .message-box {
+    padding: 16px 20px;
     border-radius: 8px;
-    border: 1px dashed #1a73e8;
+    margin-bottom: 16px;
+    font-size: 14px;
+    line-height: 1.5;
+    position: relative;
+    animation: slideIn 0.3s ease-out;
+  }
+  
+  .message-error {
+    background-color: #FEE;
+    border: 1px solid #FCC;
+    color: #C33;
+  }
+  
+  .message-error::before {
+    content: "❌ ";
+    font-size: 16px;
+    margin-right: 8px;
+  }
+  
+  .message-success {
+    background-color: #E8F5E9;
+    border: 1px solid #4CAF50;
+    color: #2E7D32;
+  }
+  
+  .message-success::before {
+    content: "✅ ";
+    font-size: 16px;
+    margin-right: 8px;
+  }
+  
+  .message-warning {
+    background-color: #FFF8E1;
+    border: 1px solid #FFB300;
+    color: #F57C00;
+  }
+  
+  .message-warning::before {
+    content: "⚠️ ";
+    font-size: 16px;
+    margin-right: 8px;
+  }
+  
+  .message-info {
+    background-color: #E3F2FD;
+    border: 1px solid #1976D2;
+    color: #1565C0;
+  }
+  
+  .message-processing {
+    background-color: #F3E5F5;
+    border: 1px solid #7B1FA2;
+    color: #6A1B9A;
+    text-align: center;
+  }
+  
+  /* OTP success box special styling */
+  .otp-success-box {
+    background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+    border: 2px solid #1976D2;
+    padding: 24px;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(25, 118, 210, 0.15);
+  }
+  
+  .otp-success-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(25, 118, 210, 0.25);
+  }
+  
+  .otp-code {
+    font-size: 32px;
+    font-weight: bold;
+    color: #1565C0;
+    margin: 12px 0;
+    letter-spacing: 4px;
+    font-family: 'Courier New', monospace;
+  }
+  
+  .otp-hint {
+    font-size: 13px;
+    color: #666;
+    margin-top: 8px;
+  }
+  
+  .otp-timer {
+    font-size: 13px;
+    color: #F57C00;
+    margin-top: 12px;
+    font-weight: 500;
+  }
+  
+  .device-info {
+    font-size: 14px;
+    color: #555;
+    margin-top: 8px;
+    font-weight: 500;
+  }
+  
+  /* Multiline message support */
+  .message-multiline {
+    white-space: pre-line;
+    text-align: left;
+  }
+  
+  /* Animation */
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
   @media screen and (max-width: 600px) {
     .otp-container {

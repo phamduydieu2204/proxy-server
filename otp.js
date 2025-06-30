@@ -34,7 +34,7 @@ document.getElementById("btnGetOtp").addEventListener("click", async () => {
 
   btn.disabled = true;
   btn.textContent = "⏳ Đang xử lý...";
-  output.innerHTML = `<div style="color: #555;">🔄 Đang kiểm tra thông tin và lấy OTP...</div>`;
+  output.innerHTML = `<div class="message-box message-processing">🔄 Đang kiểm tra thông tin và lấy OTP...</div>`;
 
 
   if (!email) {
@@ -61,7 +61,10 @@ document.getElementById("btnGetOtp").addEventListener("click", async () => {
   const checkResult = await checkRes.json();
 
   if (checkResult.status === "error") {
-    output.innerHTML = `<div style="color: red;">❌ ${checkResult.message}</div>`;
+    const messageClass = checkResult.message.includes("hết hạn") ? "message-warning" : "message-error";
+    output.innerHTML = `<div class="message-box ${messageClass} message-multiline">${checkResult.message}</div>`;
+    btn.disabled = false;
+    btn.textContent = "Lấy OTP";
     return;
   }
 
@@ -73,11 +76,11 @@ if (secondsLeft < 20) {
   const delay = msUntilNextOtp + 1000; // đợi sang chu kỳ kế tiếp
   let seconds = Math.ceil(delay / 1000);
 
-  output.innerHTML = `<div style="color: #555;">⏳ Vui lòng đợi ${seconds}s để lấy mã OTP...</div>`;
+  output.innerHTML = `<div class="message-box message-info">⏳ Vui lòng đợi ${seconds}s để lấy mã OTP...</div>`;
   clearInterval(otpCountdown);
   otpCountdown = setInterval(() => {
     seconds--;
-    output.innerHTML = `<div style="color: #555;">⏳ Vui lòng đợi ${seconds}s để lấy mã OTP...</div>`;
+    output.innerHTML = `<div class="message-box message-info">⏳ Vui lòng đợi ${seconds}s để lấy mã OTP...</div>`;
     if (seconds <= 0) {
       clearInterval(otpCountdown);
       fetchFinalOtp(email, software, otpSource);
@@ -107,36 +110,32 @@ async function fetchFinalOtp(email, software, otpSource) {
 
   if (result.status === "success") {
     const container = document.createElement("div");
-    container.style.border = "1px dashed #1a73e8";
-    container.style.padding = "14px";
-    container.style.borderRadius = "8px";
-    container.style.backgroundColor = "#f1f8ff";
-    container.style.textAlign = "center";
-    container.style.cursor = "pointer";
+    container.className = "otp-success-box";
     container.id = "otpBox";
+
+    const successIcon = document.createElement("div");
+    successIcon.textContent = "✅ Lấy mã OTP thành công!";
+    successIcon.style.color = "#2E7D32";
+    successIcon.style.fontWeight = "500";
+    successIcon.style.marginBottom = "16px";
 
     const otpCode = document.createElement("div");
     otpCode.textContent = result.otp;
-    otpCode.style.fontSize = "1.6em";
-    otpCode.style.fontWeight = "bold";
-    otpCode.style.color = "#1a73e8";
-    otpCode.style.marginBottom = "8px";
+    otpCode.className = "otp-code";
 
     const copyHint = document.createElement("div");
-    copyHint.textContent = "(Click vào mã OTP để sao chép)";
-    copyHint.style.fontSize = "0.85em";
-    copyHint.style.color = "#777";
+    copyHint.textContent = "👆 Click để sao chép mã";
+    copyHint.className = "otp-hint";
 
     const expireNote = document.createElement("div");
     expireNote.id = "otpExpireNote";
-    expireNote.style.fontSize = "0.85em";
-    expireNote.style.color = "#555";
-    expireNote.style.marginTop = "10px";
+    expireNote.className = "otp-timer";
 
     const deviceNote = document.createElement("div");
-    deviceNote.textContent = result.message ? `${result.message.split("/")[0].trim()} thiết bị` : "";
-    deviceNote.style.marginTop = "6px";
+    deviceNote.textContent = result.message || "";
+    deviceNote.className = "device-info";
 
+    container.appendChild(successIcon);
     container.appendChild(otpCode);
     container.appendChild(copyHint);
     container.appendChild(expireNote);
@@ -144,7 +143,17 @@ async function fetchFinalOtp(email, software, otpSource) {
 
     container.addEventListener("click", () => {
       navigator.clipboard.writeText(result.otp);
-      alert("✅ Mã OTP đã được sao chép!");
+      // Tạo thông báo tạm thời thay vì alert
+      const toast = document.createElement("div");
+      toast.className = "message-box message-success";
+      toast.textContent = "Đã sao chép mã OTP vào clipboard!";
+      toast.style.position = "fixed";
+      toast.style.top = "20px";
+      toast.style.left = "50%";
+      toast.style.transform = "translateX(-50%)";
+      toast.style.zIndex = "9999";
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2000);
     });
 
     output.innerHTML = "";
@@ -163,7 +172,8 @@ async function fetchFinalOtp(email, software, otpSource) {
       }
     }, 1000);
   } else {
-    output.textContent = "❌ " + (result.message || "Không thể lấy OTP.");
+    const messageClass = result.message && result.message.includes("hết hạn") ? "message-warning" : "message-error";
+    output.innerHTML = `<div class="message-box ${messageClass} message-multiline">${result.message || "Không thể lấy OTP."}</div>`;
   }
   const btn = document.getElementById("btnGetOtp");
   btn.disabled = false;
