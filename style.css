@@ -237,6 +237,256 @@ body {
     text-align: left;
   }
   
+  /* Message Cards - New Design */
+  .message-card {
+    border-radius: 12px;
+    padding: 20px;
+    margin: 16px 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.3s ease-out;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .message-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+  }
+  
+  .message-error {
+    background: linear-gradient(135deg, #FFEBEE 0%, #FCE4EC 100%);
+    border: 1px solid #EF5350;
+  }
+  
+  .message-error::before {
+    background: #EF5350;
+  }
+  
+  .message-warning {
+    background: linear-gradient(135deg, #FFF8E1 0%, #FFF3C4 100%);
+    border: 1px solid #FF9800;
+  }
+  
+  .message-warning::before {
+    background: #FF9800;
+  }
+  
+  .message-success {
+    background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+    border: 1px solid #4CAF50;
+  }
+  
+  .message-success::before {
+    background: #4CAF50;
+  }
+  
+  .message-info {
+    background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+    border: 1px solid #2196F3;
+  }
+  
+  .message-info::before {
+    background: #2196F3;
+  }
+  
+  .message-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  
+  .message-icon {
+    font-size: 24px;
+    margin-right: 12px;
+  }
+  
+  .message-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a1a;
+    line-height: 1.3;
+  }
+  
+  .message-content {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #424242;
+    margin-bottom: 12px;
+  }
+  
+  .message-suggestions {
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    padding: 12px;
+    margin: 12px 0;
+  }
+  
+  .suggestion-header {
+    font-weight: 600;
+    font-size: 13px;
+    color: #616161;
+    margin-bottom: 8px;
+  }
+  
+  .suggestion-item {
+    font-size: 13px;
+    line-height: 1.4;
+    color: #757575;
+    margin: 4px 0;
+  }
+  
+  .message-note {
+    font-size: 12px;
+    color: #757575;
+    margin-top: 12px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 6px;
+    border-left: 3px solid #E0E0E0;
+  }
+  
+  .message-action {
+    margin-top: 16px;
+    text-align: right;
+  }
+  
+  .action-button {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s ease;
+  }
+  
+  .action-error {
+    background: #EF5350;
+    color: white;
+  }
+  
+  .action-error:hover {
+    background: #E53935;
+    transform: translateY(-1px);
+  }
+  
+  .action-warning {
+    background: #FF9800;
+    color: white;
+  }
+  
+  .action-warning:hover {
+    background: #F57C00;
+    transform: translateY(-1px);
+  }
+  
+  .action-success {
+    background: #4CAF50;
+    color: white;
+  }
+  
+  .action-success:hover {
+    background: #43A047;
+    transform: translateY(-1px);
+  }
+  
+  .action-info {
+    background: #2196F3;
+    color: white;
+  }
+  
+  .action-info:hover {
+    background: #1976D2;
+    transform: translateY(-1px);
+  }
+  
+  /* OTP Success Card */
+  .otp-success-card {
+    background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+    border: 2px solid #4CAF50;
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(76, 175, 80, 0.2);
+    animation: slideIn 0.3s ease-out;
+  }
+  
+  .otp-header {
+    margin-bottom: 20px;
+  }
+  
+  .success-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+  }
+  
+  .success-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2E7D32;
+  }
+  
+  .otp-code-container {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px dashed #4CAF50;
+  }
+  
+  .otp-code-container:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);
+    border-style: solid;
+  }
+  
+  .otp-code {
+    font-family: 'Courier New', monospace;
+    font-size: 36px;
+    font-weight: bold;
+    color: #1B5E20;
+    letter-spacing: 4px;
+    margin-bottom: 8px;
+  }
+  
+  .otp-hint {
+    font-size: 12px;
+    color: #666;
+  }
+  
+  .device-info {
+    font-size: 14px;
+    color: #2E7D32;
+    margin: 12px 0;
+    font-weight: 500;
+  }
+  
+  .otp-timer {
+    font-size: 14px;
+    color: #F57C00;
+    margin: 16px 0;
+    font-weight: 500;
+  }
+  
+  .otp-instructions {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 16px;
+  }
+  
+  .instruction-item {
+    font-size: 13px;
+    color: #424242;
+    margin: 4px 0;
+  }
+  
   /* Animation */
   @keyframes slideIn {
     from {

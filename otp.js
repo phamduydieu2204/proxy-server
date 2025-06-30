@@ -1,60 +1,18 @@
 import { getConstants } from './constants.js';
+import { MessageRenderer } from './messageRenderer.js';
 
 let otpCountdown = null;
 let otpValidityCountdown = null;
-
-// 🎨 HÀM FORMAT MESSAGE ĐẸP
-function formatMessage(message, messageType = 'error') {
-  if (!message) return '';
-  
-  // Tách title và content
-  const lines = message.split('\n').filter(line => line.trim());
-  if (lines.length === 0) return message;
-  
-  let formattedHTML = '';
-  
-  // Dòng đầu tiên thường là title
-  const title = lines[0].trim();
-  formattedHTML += `<div class="message-title">${title}</div>`;
-  
-  // Xử lý các dòng còn lại
-  for (let i = 1; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line) continue;
-    
-    // Kiểm tra các pattern đặc biệt
-    if (line.startsWith('🔍') || line.startsWith('💡') || line.startsWith('📅') || 
-        line.startsWith('📱') || line.startsWith('🔔') || line.startsWith('📞')) {
-      formattedHTML += `<div class="message-section-header">${line}</div>`;
-    } else if (line.startsWith('•') || line.startsWith('+')) {
-      // Bullet points
-      const cleanLine = line.replace(/^[•+]\\s*/, '');
-      formattedHTML += `<div class="message-bullet">• ${cleanLine}</div>`;
-    } else if (line.includes(':') && !line.includes('emoji')) {
-      // Key-value pairs (nhưng không phải emoji lines)
-      const colonIndex = line.indexOf(':');
-      const key = line.substring(0, colonIndex).trim();
-      const value = line.substring(colonIndex + 1).trim();
-      
-      // Kiểm tra nếu key có emoji ở đầu
-      if (/^[\\u{1f300}-\\u{1f9ff}]/u.test(key)) {
-        formattedHTML += `<div class="message-keyvalue"><span class="message-key">${key}:</span> <span class="message-value">${value}</span></div>`;
-      } else {
-        formattedHTML += `<div class="message-content">${line}</div>`;
-      }
-    } else {
-      // Regular content
-      formattedHTML += `<div class="message-content">${line}</div>`;
-    }
-  }
-  
-  return formattedHTML;
-}
+let messageRenderer = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
   const { BACKEND_URL } = getConstants();
   const softwareSelect = document.getElementById("softwareName");
   const note = document.getElementById("otpNote");
+  const output = document.getElementById("otpResult");
+  
+  // Khởi tạo message renderer
+  messageRenderer = new MessageRenderer(output);
 
 const softwareList = ["ChatGPT Plus", "ChatGPT Pro", "Grok Ai", "Claude AI", "NetFlix", "Keysearch", "VOC_AI", "Canva"];
 softwareList.forEach(name => {
@@ -82,7 +40,7 @@ document.getElementById("btnGetOtp").addEventListener("click", async () => {
 
   btn.disabled = true;
   btn.textContent = "⏳ Đang xử lý...";
-  output.innerHTML = `<div class="message-box message-processing">🔄 Đang kiểm tra thông tin và lấy OTP...</div>`;
+  messageRenderer.render('WAITING_FOR_OTP');
 
 
   if (!email) {
@@ -109,9 +67,7 @@ document.getElementById("btnGetOtp").addEventListener("click", async () => {
   const checkResult = await checkRes.json();
 
   if (checkResult.status === "error") {
-    const messageClass = checkResult.message.includes("hết hạn") ? "message-warning" : "message-error";
-    const formattedMessage = formatMessage(checkResult.message, messageClass.replace('message-', ''));
-    output.innerHTML = `<div class="message-box ${messageClass}">${formattedMessage}</div>`;
+    messageRenderer.render(checkResult.code || 'SYSTEM_ERROR', checkResult.data);
     btn.disabled = false;
     btn.textContent = "Lấy OTP";
     return;
@@ -125,11 +81,11 @@ if (secondsLeft < 20) {
   const delay = msUntilNextOtp + 1000; // đợi sang chu kỳ kế tiếp
   let seconds = Math.ceil(delay / 1000);
 
-  output.innerHTML = `<div class="message-box message-info">⏳ Vui lòng đợi ${seconds}s để lấy mã OTP...</div>`;
+  messageRenderer.render('COUNTDOWN_WAITING', { seconds });
   clearInterval(otpCountdown);
   otpCountdown = setInterval(() => {
     seconds--;
-    output.innerHTML = `<div class="message-box message-info">⏳ Vui lòng đợi ${seconds}s để lấy mã OTP...</div>`;
+    messageRenderer.render('COUNTDOWN_WAITING', { seconds });
     if (seconds <= 0) {
       clearInterval(otpCountdown);
       fetchFinalOtp(email, software, otpSource);
@@ -158,73 +114,13 @@ async function fetchFinalOtp(email, software, otpSource) {
   const result = await response.json();
 
   if (result.status === "success") {
-    const container = document.createElement("div");
-    container.className = "otp-success-box";
-    container.id = "otpBox";
-
-    const successIcon = document.createElement("div");
-    successIcon.textContent = "✅ Lấy mã OTP thành công!";
-    successIcon.style.color = "#2E7D32";
-    successIcon.style.fontWeight = "500";
-    successIcon.style.marginBottom = "16px";
-
-    const otpCode = document.createElement("div");
-    otpCode.textContent = result.otp;
-    otpCode.className = "otp-code";
-
-    const copyHint = document.createElement("div");
-    copyHint.textContent = "👆 Click để sao chép mã";
-    copyHint.className = "otp-hint";
-
-    const expireNote = document.createElement("div");
-    expireNote.id = "otpExpireNote";
-    expireNote.className = "otp-timer";
-
-    const deviceNote = document.createElement("div");
-    deviceNote.textContent = result.message || "";
-    deviceNote.className = "device-info";
-
-    container.appendChild(successIcon);
-    container.appendChild(otpCode);
-    container.appendChild(copyHint);
-    container.appendChild(expireNote);
-    container.appendChild(deviceNote);
-
-    container.addEventListener("click", () => {
-      navigator.clipboard.writeText(result.otp);
-      // Tạo thông báo tạm thời thay vì alert
-      const toast = document.createElement("div");
-      toast.className = "message-box message-success";
-      toast.textContent = "Đã sao chép mã OTP vào clipboard!";
-      toast.style.position = "fixed";
-      toast.style.top = "20px";
-      toast.style.left = "50%";
-      toast.style.transform = "translateX(-50%)";
-      toast.style.zIndex = "9999";
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 2000);
-    });
-
-    output.innerHTML = "";
-    output.appendChild(container);
-
-    let remain = 30;
-    expireNote.textContent = `⏱️ Mã OTP còn hiệu lực trong ${remain}s`;
-    clearInterval(otpValidityCountdown);
-    otpValidityCountdown = setInterval(() => {
-      remain--;
-      if (remain > 0) {
-        expireNote.textContent = `⏱️ Mã OTP còn hiệu lực trong ${remain}s`;
-      } else {
-        clearInterval(otpValidityCountdown);
-        output.innerHTML = "";
-      }
-    }, 1000);
+    const otpData = {
+      otp: result.otp,
+      deviceInfo: result.data ? `Đã sử dụng ${result.data.currentDevices}/${result.data.maxDevices} thiết bị` : null
+    };
+    messageRenderer.renderOTPSuccess(otpData);
   } else {
-    const messageClass = result.message && result.message.includes("hết hạn") ? "message-warning" : "message-error";
-    const errorMessage = result.message || "Không thể lấy OTP.";
-    const formattedMessage = formatMessage(errorMessage, messageClass.replace('message-', ''));
-    output.innerHTML = `<div class="message-box ${messageClass}">${formattedMessage}</div>`;
+    messageRenderer.render(result.code || 'SYSTEM_ERROR', result.data);
   }
   const btn = document.getElementById("btnGetOtp");
   btn.disabled = false;
