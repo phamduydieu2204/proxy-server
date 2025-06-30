@@ -7,11 +7,22 @@ export const MESSAGE_TEMPLATES = {
     title: 'Email không có trong hệ thống',
     content: 'Chúng tôi không tìm thấy email này trong danh sách đăng ký.',
     suggestions: [
-      'Kiểm tra lại email đã đăng ký với vidieu.vn',
-      'Đảm bảo đã chọn đúng dịch vụ cần lấy OTP'
+      'Vui lòng điền đúng email (mà bạn sở hữu) đã đăng ký với Vidieu.vn',
+      'Email phải trùng khớp chính xác với email bạn đã đăng ký dịch vụ ChatGPT Plus'
     ],
-    note: 'Nhiều khách hàng đăng ký ChatGPT Plus nhưng nhầm chọn ChatGPT Pro',
-    action: null
+    note: 'Nếu cần hỗ trợ, vui lòng liên hệ với chúng tôi:',
+    actions: [
+      {
+        text: '📘 Fanpage Facebook',
+        link: 'https://www.facebook.com/vidieuvn.muatoolAmazon',
+        type: 'facebook'
+      },
+      {
+        text: '📱 Zalo hỗ trợ',
+        link: 'https://zalo.me/0815282286',
+        type: 'zalo'
+      }
+    ]
   },
 
   SUBSCRIPTION_EXPIRED: {
