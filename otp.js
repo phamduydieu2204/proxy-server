@@ -53,18 +53,33 @@ document.getElementById("btnGetOtp").addEventListener("click", async () => {
   const { BACKEND_URL } = getConstants();
 
   // Step 1: Gọi check
-  const checkRes = await fetch(BACKEND_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      action: "getOtpCheck",
-      email,
-      software,
-      otpSource
-    })
-  });
+  let checkResult;
+  try {
+    const checkRes = await fetch(BACKEND_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "getOtpCheck",
+        email,
+        software,
+        otpSource
+      })
+    });
 
-  const checkResult = await checkRes.json();
+    if (!checkRes.ok) {
+      throw new Error(`Server error: ${checkRes.status}`);
+    }
+
+    checkResult = await checkRes.json();
+  } catch (error) {
+    console.error("Lỗi kiểm tra OTP:", error);
+    messageRenderer.render('SYSTEM_ERROR', {
+      error: "Không thể kết nối tới server. Vui lòng thử lại sau."
+    });
+    btn.disabled = false;
+    btn.textContent = "Lấy OTP";
+    return;
+  }
 
   if (checkResult.status === "error") {
     messageRenderer.render(checkResult.code || 'SYSTEM_ERROR', checkResult.data);
@@ -99,19 +114,35 @@ if (secondsLeft < 20) {
 async function fetchFinalOtp(email, software, otpSource) {
   const { BACKEND_URL } = getConstants();
   const output = document.getElementById("otpResult");
+  const btn = document.getElementById("btnGetOtp");
 
-  const response = await fetch(BACKEND_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      action: "getOtpFinal",
-      email,
-      software,
-      otpSource
-    })
-  });
+  let result;
+  try {
+    const response = await fetch(BACKEND_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "getOtpFinal",
+        email,
+        software,
+        otpSource
+      })
+    });
 
-  const result = await response.json();
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.status}`);
+    }
+
+    result = await response.json();
+  } catch (error) {
+    console.error("Lỗi lấy OTP:", error);
+    messageRenderer.render('SYSTEM_ERROR', {
+      error: "Server đang gặp sự cố. Vui lòng thử lại sau ít phút."
+    });
+    btn.disabled = false;
+    btn.textContent = "Lấy OTP";
+    return;
+  }
 
   if (result.status === "success") {
     const otpData = {
@@ -122,7 +153,6 @@ async function fetchFinalOtp(email, software, otpSource) {
   } else {
     messageRenderer.render(result.code || 'SYSTEM_ERROR', result.data);
   }
-  const btn = document.getElementById("btnGetOtp");
   btn.disabled = false;
   btn.textContent = "Lấy OTP";
 }

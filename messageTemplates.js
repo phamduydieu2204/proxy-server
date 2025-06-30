@@ -90,16 +90,30 @@ export const MESSAGE_TEMPLATES = {
     type: 'error',
     icon: '⚠️',
     title: 'Lỗi hệ thống',
-    content: 'Đã xảy ra lỗi không mong muốn trong quá trình xử lý.',
+    content: '{error}',
     suggestions: [
-      'Vui lòng thử lại sau ít phút',
+      'Kiểm tra kết nối internet',
+      'Thử lại sau 1-2 phút',
       'Liên hệ hỗ trợ nếu lỗi vẫn tiếp diễn'
     ],
-    note: null,
-    action: {
-      text: 'Báo lỗi',
-      link: 'https://vidieu.vn/report-bug'
-    }
+    note: 'Server có thể đang bảo trì hoặc quá tải',
+    actions: [
+      {
+        text: 'Thử lại',
+        link: 'javascript:location.reload()',
+        type: 'primary'
+      },
+      {
+        text: '📘 Facebook',
+        link: 'https://www.facebook.com/vidieuvn.muatoolAmazon',
+        type: 'facebook'
+      },
+      {
+        text: '📱 Zalo',
+        link: 'https://zalo.me/0815282286',
+        type: 'zalo'
+      }
+    ]
   },
 
   // ✅ SUCCESS
