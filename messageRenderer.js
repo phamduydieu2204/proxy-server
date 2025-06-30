@@ -23,7 +23,7 @@ export class MessageRenderer {
 
   // 🏗️ Xây dựng HTML cho message
   buildMessageHTML(template, data) {
-    const { type, icon, title, content, suggestions, note, action } = template;
+    const { type, icon, title, content, suggestions, note, action, actions } = template;
     
     let html = `<div class="message-card message-${type}">`;
     
@@ -63,8 +63,20 @@ export class MessageRenderer {
       `;
     }
     
-    // Action button
-    if (action) {
+    // Action buttons (multiple actions support)
+    if (actions && actions.length > 0) {
+      html += `<div class="message-actions">`;
+      actions.forEach(actionItem => {
+        const buttonClass = this.getActionButtonClass(actionItem.type || type);
+        html += `
+          <a href="${actionItem.link}" target="_blank" class="action-button ${buttonClass}">
+            ${actionItem.text}
+          </a>
+        `;
+      });
+      html += `</div>`;
+    } else if (action) {
+      // Backward compatibility for single action
       html += `
         <div class="message-action">
           <a href="${action.link}" target="_blank" class="action-button action-${type}">
@@ -85,6 +97,20 @@ export class MessageRenderer {
     return text.replace(/\{(\w+)\}/g, (match, key) => {
       return data[key] !== undefined ? data[key] : match;
     });
+  }
+
+  // 🎨 Lấy CSS class cho action button
+  getActionButtonClass(type) {
+    const classMap = {
+      'primary': 'action-primary',
+      'facebook': 'action-facebook', 
+      'zalo': 'action-zalo',
+      'error': 'action-error',
+      'warning': 'action-warning',
+      'success': 'action-success',
+      'info': 'action-info'
+    };
+    return classMap[type] || 'action-primary';
   }
 
   // 📱 Render fallback khi không có template

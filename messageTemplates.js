@@ -19,15 +19,25 @@ export const MESSAGE_TEMPLATES = {
     icon: '⏰',
     title: 'Chu kỳ sử dụng đã hết hạn',
     content: 'Gói dịch vụ của bạn đã hết hạn vào ngày {expiredDate} và cần được gia hạn.',
-    suggestions: [
-      'Liên hệ để gia hạn gói dịch vụ',
-      'Kiểm tra email để xem thông báo gia hạn'
-    ],
-    note: 'Dữ liệu cũ vẫn được bảo toàn khi gia hạn',
-    action: {
-      text: 'Gia hạn ngay',
-      link: 'https://vidieu.vn/renew'
-    }
+    suggestions: [],
+    note: null,
+    actions: [
+      {
+        text: 'Gia hạn ngay',
+        link: 'https://vidieu.vn/chatgpt-4-0/',
+        type: 'primary'
+      },
+      {
+        text: '📘 Facebook',
+        link: 'https://www.facebook.com/vidieuvn.muatoolAmazon',
+        type: 'facebook'
+      },
+      {
+        text: '📱 Zalo',
+        link: 'https://zalo.me/0815282286',
+        type: 'zalo'
+      }
+    ]
   },
 
   DEVICE_LIMIT_REACHED: {

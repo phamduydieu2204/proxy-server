@@ -354,6 +354,14 @@ body {
     text-align: right;
   }
   
+  .message-actions {
+    margin-top: 16px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
   .action-button {
     display: inline-block;
     padding: 10px 20px;
@@ -362,6 +370,8 @@ body {
     font-weight: 500;
     font-size: 14px;
     transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
   }
   
   .action-error {
@@ -402,6 +412,56 @@ body {
   .action-info:hover {
     background: #1976D2;
     transform: translateY(-1px);
+  }
+  
+  /* New action button styles */
+  .action-primary {
+    background: #FF9800;
+    color: white;
+    font-weight: 600;
+  }
+  
+  .action-primary:hover {
+    background: #F57C00;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(255, 152, 0, 0.3);
+  }
+  
+  .action-facebook {
+    background: #1877F2;
+    color: white;
+    min-width: 120px;
+  }
+  
+  .action-facebook:hover {
+    background: #166FE5;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(24, 119, 242, 0.3);
+  }
+  
+  .action-zalo {
+    background: #0068FF;
+    color: white;
+    min-width: 120px;
+  }
+  
+  .action-zalo:hover {
+    background: #0056D6;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 104, 255, 0.3);
+  }
+  
+  /* Mobile responsive for action buttons */
+  @media screen and (max-width: 600px) {
+    .message-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .action-button {
+      text-align: center;
+      margin: 4px 0;
+    }
   }
   
   /* OTP Success Card */
