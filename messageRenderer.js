@@ -21,6 +21,18 @@ export class MessageRenderer {
     this.attachEventListeners();
   }
 
+  // 🔄 Cập nhật chỉ countdown mà không re-render toàn bộ
+  updateCountdown(seconds) {
+    const countdownElement = this.container.querySelector('.countdown-seconds');
+    if (countdownElement) {
+      countdownElement.textContent = seconds;
+    } else {
+      // Fallback nếu không tìm thấy element
+      console.warn('Countdown element not found, using fallback render');
+      this.render('COUNTDOWN_WAITING', { seconds });
+    }
+  }
+
   // 🏗️ Xây dựng HTML cho message
   buildMessageHTML(template, data) {
     const { type, icon, title, content, suggestions, note, action, actions } = template;

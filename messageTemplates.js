@@ -140,7 +140,7 @@ export const MESSAGE_TEMPLATES = {
   COUNTDOWN_WAITING: {
     type: 'info',
     icon: '⏱️',
-    title: 'Vui lòng đợi {seconds} giây',
+    title: 'Vui lòng đợi <span class="countdown-seconds">{seconds}</span> giây',
     content: 'Để đảm bảo mã OTP chính xác, hãy đợi đến chu kỳ tiếp theo.',
     suggestions: [],
     note: 'Mã OTP được làm mới mỗi 30 giây',

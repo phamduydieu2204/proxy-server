@@ -85,7 +85,7 @@ if (secondsLeft < 20) {
   clearInterval(otpCountdown);
   otpCountdown = setInterval(() => {
     seconds--;
-    messageRenderer.render('COUNTDOWN_WAITING', { seconds });
+    messageRenderer.updateCountdown(seconds);
     if (seconds <= 0) {
       clearInterval(otpCountdown);
       fetchFinalOtp(email, software, otpSource);
