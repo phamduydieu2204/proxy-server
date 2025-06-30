@@ -8,7 +8,6 @@ let messageRenderer = null;
 document.addEventListener("DOMContentLoaded", async () => {
   const { BACKEND_URL } = getConstants();
   const softwareSelect = document.getElementById("softwareName");
-  const note = document.getElementById("otpNote");
   const output = document.getElementById("otpResult");
   
   // Khởi tạo message renderer
@@ -24,11 +23,6 @@ softwareList.forEach(name => {
 
 // Đặt ChatGPT Plus là giá trị mặc định
 softwareSelect.value = "ChatGPT Plus";
-
-
-  if (note) {
-    note.style.display = "none";
-  }
 });
 
 document.getElementById("btnGetOtp").addEventListener("click", async () => {
