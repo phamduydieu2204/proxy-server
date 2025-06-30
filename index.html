@@ -12,10 +12,13 @@
     <label for="emailDangKy">📧 Email của bạn là gì?:</label>
     <input type="email" id="emailDangKy" required />
 
-    <label for="softwareName">🧩 Chọn dịch vụ cần lấy mã OTP:</label>
-    <select id="softwareName" required>
-      <option value="">-- Chọn phần mềm --</option>
-    </select>
+    <!-- ✅ ẨN trường chọn dịch vụ và nơi lấy mã -->
+    <div style="display: none;">
+      <label for="softwareName">🧩 Chọn dịch vụ cần lấy mã OTP:</label>
+      <select id="softwareName" required>
+        <option value="ChatGPT Plus" selected>ChatGPT Plus</option>
+      </select>
+    </div>
 
     <!-- ✅ ẨN trường chọn nơi lấy mã -->
     <div style="display: none;">

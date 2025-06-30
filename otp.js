@@ -27,7 +27,7 @@ softwareSelect.value = "ChatGPT Plus";
 
 document.getElementById("btnGetOtp").addEventListener("click", async () => {
   const email = document.getElementById("emailDangKy").value.trim();
-  const software = document.getElementById("softwareName").value;
+  const software = "ChatGPT Plus"; // Mặc định là ChatGPT Plus
   const otpSource = "authy"; // mặc định luôn dùng Authy
   const output = document.getElementById("otpResult");
   const btn = document.getElementById("btnGetOtp");
@@ -37,8 +37,8 @@ document.getElementById("btnGetOtp").addEventListener("click", async () => {
   output.innerHTML = `<div style="color: #555;">🔄 Đang kiểm tra thông tin và lấy OTP...</div>`;
 
 
-  if (!email || !software || !otpSource) {
-    alert("Vui lòng điền đầy đủ thông tin!");
+  if (!email) {
+    alert("Vui lòng nhập email của bạn!");
     btn.disabled = false;
     btn.textContent = "Lấy OTP";
     return;
