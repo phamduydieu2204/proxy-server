@@ -3,6 +3,54 @@ import { getConstants } from './constants.js';
 let otpCountdown = null;
 let otpValidityCountdown = null;
 
+// 🎨 HÀM FORMAT MESSAGE ĐẸP
+function formatMessage(message, messageType = 'error') {
+  if (!message) return '';
+  
+  // Tách title và content
+  const lines = message.split('\n').filter(line => line.trim());
+  if (lines.length === 0) return message;
+  
+  let formattedHTML = '';
+  
+  // Dòng đầu tiên thường là title
+  const title = lines[0].trim();
+  formattedHTML += `<div class="message-title">${title}</div>`;
+  
+  // Xử lý các dòng còn lại
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    
+    // Kiểm tra các pattern đặc biệt
+    if (line.startsWith('🔍') || line.startsWith('💡') || line.startsWith('📅') || 
+        line.startsWith('📱') || line.startsWith('🔔') || line.startsWith('📞')) {
+      formattedHTML += `<div class="message-section-header">${line}</div>`;
+    } else if (line.startsWith('•') || line.startsWith('+')) {
+      // Bullet points
+      const cleanLine = line.replace(/^[•+]\\s*/, '');
+      formattedHTML += `<div class="message-bullet">• ${cleanLine}</div>`;
+    } else if (line.includes(':') && !line.includes('emoji')) {
+      // Key-value pairs (nhưng không phải emoji lines)
+      const colonIndex = line.indexOf(':');
+      const key = line.substring(0, colonIndex).trim();
+      const value = line.substring(colonIndex + 1).trim();
+      
+      // Kiểm tra nếu key có emoji ở đầu
+      if (/^[\\u{1f300}-\\u{1f9ff}]/u.test(key)) {
+        formattedHTML += `<div class="message-keyvalue"><span class="message-key">${key}:</span> <span class="message-value">${value}</span></div>`;
+      } else {
+        formattedHTML += `<div class="message-content">${line}</div>`;
+      }
+    } else {
+      // Regular content
+      formattedHTML += `<div class="message-content">${line}</div>`;
+    }
+  }
+  
+  return formattedHTML;
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   const { BACKEND_URL } = getConstants();
   const softwareSelect = document.getElementById("softwareName");
@@ -62,7 +110,8 @@ document.getElementById("btnGetOtp").addEventListener("click", async () => {
 
   if (checkResult.status === "error") {
     const messageClass = checkResult.message.includes("hết hạn") ? "message-warning" : "message-error";
-    output.innerHTML = `<div class="message-box ${messageClass} message-multiline">${checkResult.message}</div>`;
+    const formattedMessage = formatMessage(checkResult.message, messageClass.replace('message-', ''));
+    output.innerHTML = `<div class="message-box ${messageClass}">${formattedMessage}</div>`;
     btn.disabled = false;
     btn.textContent = "Lấy OTP";
     return;
@@ -173,7 +222,9 @@ async function fetchFinalOtp(email, software, otpSource) {
     }, 1000);
   } else {
     const messageClass = result.message && result.message.includes("hết hạn") ? "message-warning" : "message-error";
-    output.innerHTML = `<div class="message-box ${messageClass} message-multiline">${result.message || "Không thể lấy OTP."}</div>`;
+    const errorMessage = result.message || "Không thể lấy OTP.";
+    const formattedMessage = formatMessage(errorMessage, messageClass.replace('message-', ''));
+    output.innerHTML = `<div class="message-box ${messageClass}">${formattedMessage}</div>`;
   }
   const btn = document.getElementById("btnGetOtp");
   btn.disabled = false;
