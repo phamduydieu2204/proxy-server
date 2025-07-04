@@ -13,20 +13,39 @@ app.use((req, res, next) => {
 });
 
 app.use(cors({
-  origin: [
-    'https://phamduydieu2204.github.io',
-    'https://vidieu.vn',
-    'http://localhost:3000',
-    'http://localhost:8080',
-    'http://127.0.0.1:3000',
-    'http://127.0.0.1:8080',
-    /https:\/\/phamduydieu2204\.github\.io/
-  ],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      'https://phamduydieu2204.github.io',
+      'https://vidieu.vn',
+      'http://localhost:3000',
+      'http://localhost:8080',
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:8080'
+    ];
+    
+    // Check if origin is in allowed list or matches GitHub Pages pattern
+    if (allowedOrigins.includes(origin) || origin.includes('phamduydieu2204.github.io')) {
+      return callback(null, true);
+    }
+    
+    console.log('❌ CORS blocked origin:', origin);
+    return callback(new Error('Not allowed by CORS'));
+  },
   methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type'],
-  credentials: true
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  optionsSuccessStatus: 200
 }));
 app.use(express.json());
+
+// Handle preflight OPTIONS requests
+app.options('/api/proxy', (req, res) => {
+  console.log('✅ OPTIONS request received from:', req.headers.origin);
+  res.status(200).end();
+});
 
 app.post('/api/proxy', async (req, res) => {
   try {
