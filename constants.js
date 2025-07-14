@@ -3,10 +3,8 @@ export function getConstants() {
       BACKEND_URL: 'https://sleepy-bastion-81523-f30e287dba50.herokuapp.com/api/proxy',
       SERVICES: [
         { value: 'ChatGPT Plus', label: 'ChatGPT Plus' },
-        { value: 'Claude Pro', label: 'Claude Pro' },
-        { value: 'Perplexity AI', label: 'Perplexity AI' },
-        { value: 'Midjourney', label: 'Midjourney' },
-        { value: 'GitHub Copilot', label: 'GitHub Copilot' }
+        { value: 'Grok Ai', label: 'Grok Ai' },
+        { value: 'VOC_AI', label: 'VOC_AI' }
       ]
     };
   }
