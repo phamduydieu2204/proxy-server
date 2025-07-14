@@ -6,28 +6,29 @@ let otpValidityCountdown = null;
 let messageRenderer = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
-  const { BACKEND_URL } = getConstants();
+  const { SERVICES } = getConstants();
   const softwareSelect = document.getElementById("softwareName");
   const output = document.getElementById("otpResult");
   
   // Khởi tạo message renderer
   messageRenderer = new MessageRenderer(output);
 
-const softwareList = ["ChatGPT Plus", "ChatGPT Pro", "Grok Ai", "Claude AI", "NetFlix", "Keysearch", "VOC_AI", "Canva"];
-softwareList.forEach(name => {
-  const option = document.createElement("option");
-  option.value = name;
-  option.textContent = name;
-  softwareSelect.appendChild(option);
-});
-
-// Đặt ChatGPT Plus là giá trị mặc định
-softwareSelect.value = "ChatGPT Plus";
+  // Xóa các option hiện tại trừ option đầu tiên
+  softwareSelect.innerHTML = '';
+  
+  // Thêm các dịch vụ từ constants
+  SERVICES.forEach((service, index) => {
+    const option = document.createElement("option");
+    option.value = service.value;
+    option.textContent = service.label;
+    if (index === 0) option.selected = true; // ChatGPT Plus là mặc định
+    softwareSelect.appendChild(option);
+  });
 });
 
 document.getElementById("btnGetOtp").addEventListener("click", async () => {
   const email = document.getElementById("emailDangKy").value.trim();
-  const software = "ChatGPT Plus"; // Mặc định là ChatGPT Plus
+  const software = document.getElementById("softwareName").value; // Lấy dịch vụ được chọn
   const otpSource = "authy"; // mặc định luôn dùng Authy
   const output = document.getElementById("otpResult");
   const btn = document.getElementById("btnGetOtp");
