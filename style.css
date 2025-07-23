@@ -46,8 +46,14 @@ body {
     cursor: pointer;
   }
   
-  .otp-container button:hover {
+  .otp-container button:hover:not(:disabled) {
     background-color: #0f5ec5;
+  }
+
+  .otp-container button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.6;
   }
   
   .note {

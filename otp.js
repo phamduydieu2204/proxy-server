@@ -4,6 +4,9 @@ import { MessageRenderer } from './messageRenderer.js';
 let otpCountdown = null;
 let otpValidityCountdown = null;
 let messageRenderer = null;
+let lastRequestTime = 0;
+let isProcessing = false;
+const RATE_LIMIT_DELAY = 5000; // 5 giây
 
 document.addEventListener("DOMContentLoaded", async () => {
   const { SERVICES } = getConstants();
@@ -33,6 +36,25 @@ document.getElementById("btnGetOtp").addEventListener("click", async () => {
   const output = document.getElementById("otpResult");
   const btn = document.getElementById("btnGetOtp");
 
+  // Rate limiting check
+  const now = Date.now();
+  if (isProcessing) {
+    messageRenderer.render('SYSTEM_ERROR', {
+      error: "Đang xử lý yêu cầu trước đó. Vui lòng đợi..."
+    });
+    return;
+  }
+
+  if (now - lastRequestTime < RATE_LIMIT_DELAY) {
+    const remainingTime = Math.ceil((RATE_LIMIT_DELAY - (now - lastRequestTime)) / 1000);
+    messageRenderer.render('SYSTEM_ERROR', {
+      error: `Vui lòng đợi ${remainingTime} giây trước khi thử lại`
+    });
+    return;
+  }
+
+  isProcessing = true;
+  lastRequestTime = now;
   btn.disabled = true;
   btn.textContent = "⏳ Đang xử lý...";
   messageRenderer.render('WAITING_FOR_OTP');
@@ -40,6 +62,7 @@ document.getElementById("btnGetOtp").addEventListener("click", async () => {
 
   if (!email) {
     alert("Vui lòng nhập email của bạn!");
+    isProcessing = false;
     btn.disabled = false;
     btn.textContent = "Lấy OTP";
     return;
@@ -47,9 +70,12 @@ document.getElementById("btnGetOtp").addEventListener("click", async () => {
 
   const { BACKEND_URL } = getConstants();
 
-  // Step 1: Gọi check
+  // Step 1: Gọi check với timeout
   let checkResult;
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
     const checkRes = await fetch(BACKEND_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -58,8 +84,11 @@ document.getElementById("btnGetOtp").addEventListener("click", async () => {
         email,
         software,
         otpSource
-      })
+      }),
+      signal: controller.signal
     });
+
+    clearTimeout(timeoutId);
 
     if (!checkRes.ok) {
       throw new Error(`Server error: ${checkRes.status}`);
@@ -68,9 +97,16 @@ document.getElementById("btnGetOtp").addEventListener("click", async () => {
     checkResult = await checkRes.json();
   } catch (error) {
     console.error("Lỗi kiểm tra OTP:", error);
-    messageRenderer.render('SYSTEM_ERROR', {
-      error: "Không thể kết nối tới server. Vui lòng thử lại sau."
-    });
+    if (error.name === 'AbortError') {
+      messageRenderer.render('SYSTEM_ERROR', {
+        error: "Yêu cầu kiểm tra hết thời gian chờ. Vui lòng thử lại."
+      });
+    } else {
+      messageRenderer.render('SYSTEM_ERROR', {
+        error: "Không thể kết nối tới server. Vui lòng thử lại sau."
+      });
+    }
+    isProcessing = false;
     btn.disabled = false;
     btn.textContent = "Lấy OTP";
     return;
@@ -78,6 +114,7 @@ document.getElementById("btnGetOtp").addEventListener("click", async () => {
 
   if (checkResult.status === "error") {
     messageRenderer.render(checkResult.code || 'SYSTEM_ERROR', checkResult.data);
+    isProcessing = false;
     btn.disabled = false;
     btn.textContent = "Lấy OTP";
     return;
@@ -113,6 +150,9 @@ async function fetchFinalOtp(email, software, otpSource) {
 
   let result;
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+
     const response = await fetch(BACKEND_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -121,8 +161,11 @@ async function fetchFinalOtp(email, software, otpSource) {
         email,
         software,
         otpSource
-      })
+      }),
+      signal: controller.signal
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       throw new Error(`Server error: ${response.status}`);
@@ -131,9 +174,16 @@ async function fetchFinalOtp(email, software, otpSource) {
     result = await response.json();
   } catch (error) {
     console.error("Lỗi lấy OTP:", error);
-    messageRenderer.render('SYSTEM_ERROR', {
-      error: "Server đang gặp sự cố. Vui lòng thử lại sau ít phút."
-    });
+    if (error.name === 'AbortError') {
+      messageRenderer.render('SYSTEM_ERROR', {
+        error: "Yêu cầu hết thời gian chờ. Vui lòng thử lại."
+      });
+    } else {
+      messageRenderer.render('SYSTEM_ERROR', {
+        error: "Server đang gặp sự cố. Vui lòng thử lại sau ít phút."
+      });
+    }
+    isProcessing = false;
     btn.disabled = false;
     btn.textContent = "Lấy OTP";
     return;
@@ -148,6 +198,7 @@ async function fetchFinalOtp(email, software, otpSource) {
   } else {
     messageRenderer.render(result.code || 'SYSTEM_ERROR', result.data);
   }
+  isProcessing = false;
   btn.disabled = false;
   btn.textContent = "Lấy OTP";
 }
